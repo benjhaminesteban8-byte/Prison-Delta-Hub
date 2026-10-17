@@ -1,0 +1,139 @@
+
+--[[
+    ALPHA HUD
+    Roblox Lua / Mobile
+]]
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "ALPHA_HUD"
+gui.ResetOnSpawn = false
+
+local ok = pcall(function()
+    gui.Parent = game:GetService("CoreGui")
+end)
+
+if not ok or not gui.Parent then
+    gui.Parent = player:WaitForChild("PlayerGui")
+end
+
+local function create(class, props, parent)
+    local obj = Instance.new(class)
+    for k, v in pairs(props) do
+        obj[k] = v
+    end
+    obj.Parent = parent
+    return obj
+end
+
+local purple = Color3.fromRGB(135, 75, 255)
+local dark = Color3.fromRGB(24, 24, 34)
+local gray = Color3.fromRGB(48, 45, 62)
+
+local floating = create("TextButton", {
+    Size = UDim2.fromOffset(55, 55),
+    Position = UDim2.new(0, 20, 0.4, 0),
+    BackgroundColor3 = purple,
+    Text = "AH",
+    TextColor3 = Color3.new(1, 1, 1),
+    TextSize = 20,
+    Font = Enum.Font.GothamBold,
+}, gui)
+
+create("UICorner", {
+    CornerRadius = UDim.new(0, 14)
+}, floating)
+
+local panel = create("Frame", {
+    Size = UDim2.fromOffset(285, 390),
+    Position = UDim2.new(0.5, -142, 0.5, -195),
+    BackgroundColor3 = dark,
+    Visible = false,
+}, gui)
+
+create("UICorner", {
+    CornerRadius = UDim.new(0, 12)
+}, panel)
+
+create("TextLabel", {
+    Size = UDim2.new(1, -45, 0, 45),
+    Position = UDim2.fromOffset(12, 0),
+    BackgroundTransparency = 1,
+    Text = "ALPHA HUD",
+    TextColor3 = purple,
+    TextSize = 21,
+    Font = Enum.Font.GothamBold,
+    TextXAlignment = Enum.TextXAlignment.Left,
+}, panel)
+
+local close = create("TextButton", {
+    Size = UDim2.fromOffset(32, 32),
+    Position = UDim2.new(1, -38, 0, 7),
+    BackgroundColor3 = gray,
+    Text = "X",
+    TextColor3 = Color3.new(1, 1, 1),
+}, panel)
+
+close.Activated:Connect(function()
+    panel.Visible = false
+end)
+
+local status = create("TextLabel", {
+    Size = UDim2.new(1, -20, 0, 24),
+    Position = UDim2.fromOffset(10, 43),
+    BackgroundTransparency = 1,
+    Text = "ALPHA HUD | READY",
+    TextColor3 = Color3.fromRGB(210, 210, 220),
+    TextSize = 12,
+}, panel)
+
+local options = {
+    "PVP",
+    "FARM",
+    "AIMBOT",
+    "SILENT AIM",
+    "ESP",
+    "AUTO RUN",
+    "SETTINGS",
+}
+
+local states = {}
+
+for i, name in ipairs(options) do
+    local button = create("TextButton", {
+        Size = UDim2.new(1, -20, 0, 37),
+        Position = UDim2.new(0, 10, 0, 72 + (i - 1) * 43),
+        BackgroundColor3 = gray,
+        Text = name .. " [ OFF ]",
+        TextColor3 = Color3.new(1, 1, 1),
+        TextSize = 13,
+        Font = Enum.Font.GothamMedium,
+    }, panel)
+
+    create("UICorner", {
+        CornerRadius = UDim.new(0, 8)
+    }, button)
+
+    states[name] = false
+
+    button.Activated:Connect(function()
+        states[name] = not states[name]
+
+        button.Text = name ..
+            (states[name] and " [ ON ]" or " [ OFF ]")
+
+        button.BackgroundColor3 =
+            states[name] and purple or gray
+
+        status.Text = name ..
+            (states[name] and " ACTIVATED" or " DEACTIVATED")
+    end)
+end
+
+floating.Activated:Connect(function()
+    panel.Visible = not panel.Visible
+end)
+
+print("ALPHA HUD loaded successfully")
